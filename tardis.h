@@ -9,6 +9,8 @@ using namespace std;
 
 #include <GL\glew.h>
 
+#include "MVPprovider.h"
+
 class Tardis
 {
 public:
@@ -29,9 +31,7 @@ private:
 	glm::vec3 lightPos;
 
 	glm::mat4 ModelMatrix;
-	glm::mat4 ProjectionMatrix;
-	glm::mat4 ViewMatrix;
-	glm::mat4 MVP;
+	MVPprovider* mvp;
 
 	GLuint Texture;
 	GLuint TextureID;

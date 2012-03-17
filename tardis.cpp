@@ -4,6 +4,7 @@
 
 Tardis::Tardis(void)
 {
+	mvp = MVPprovider::Instance();
 }
 
 Tardis::~Tardis(void)
@@ -44,22 +45,18 @@ void Tardis::initialize(char* model="tardis.obj", char* diffuseMap="tardis.dds",
 	indexVBO(vertices, uvs, normals, indices, indexed_vertices, indexed_uvs, indexed_normals);
 	indicesSize = indices.size();
 
-	vertexbuffer;
 	glGenBuffers(1, &vertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 	glBufferData(GL_ARRAY_BUFFER, indexed_vertices.size() * sizeof(glm::vec3), &indexed_vertices[0], GL_STATIC_DRAW);
 
-	uvbuffer;
     glGenBuffers(1, &uvbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
     glBufferData(GL_ARRAY_BUFFER, indexed_uvs.size() * sizeof(glm::vec2), &indexed_uvs[0], GL_STATIC_DRAW);
 
-	normalbuffer;
 	glGenBuffers(1, &normalbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
 	glBufferData(GL_ARRAY_BUFFER, indexed_normals.size() * sizeof(glm::vec3), &indexed_normals[0], GL_STATIC_DRAW);
 
-	elementbuffer;
 	glGenBuffers(1, &elementbuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
@@ -72,16 +69,13 @@ void Tardis::initialize(char* model="tardis.obj", char* diffuseMap="tardis.dds",
 
 void Tardis::process()
 {
-	computeMatricesFromInputs();
-	ProjectionMatrix = getProjectionMatrix();
-	ViewMatrix = getViewMatrix();
 	ModelMatrix = glm::rotate(ModelMatrix, 1.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-
-	MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 }
 
 void Tardis::render()
 {
+	glm::mat4 ViewMatrix = mvp->View();
+	glm::mat4 ProjectionMatrix = mvp->Projection();
 	glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
 	// Clear the screen

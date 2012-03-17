@@ -1,4 +1,6 @@
 #include "tardis.h"
+#include "vortex.h"
+#include "MVPprovider.h"
 
 #include <GL\glfw.h>
 
@@ -44,18 +46,28 @@ int main(int agrc, char** argv)
 {
 	initializeWindow();
 
+	MVPprovider* mvp = MVPprovider::Instance();
+
 	Tardis* m_tardis;
 	m_tardis = new Tardis();
 
-	//m_tardis->initialize("tardis.obj", "tardis.dds", "tardis-ambiant.dds");
+	Vortex* m_vortex;
+	m_vortex = new Vortex();
+
+	m_tardis->initialize("tardis.obj", "tardis.dds", "tardis-ambiant.dds");
+	//m_vortex->initialize();
 
 	do
 	{
-		//m_tardis->process();
+		mvp->calculateMatrices();
+
+		m_tardis->process();
+		//m_vortex->process();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//m_tardis->render();
+		//m_vortex->render();
+		m_tardis->render();
 
 		glfwSwapBuffers();
 	} while( glfwGetKey( GLFW_KEY_ESC ) != GLFW_PRESS && glfwGetWindowParam( GLFW_OPENED ) );
