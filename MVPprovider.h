@@ -12,6 +12,8 @@ public:
 	glm::mat4 View() { return ViewMatrix; }
 	glm::mat4 Projection() { return ProjectionMatrix; }
 
+	void setScreenSize(int width, int height) {	screenWidth = width; screenHeight = height;	}
+
 protected:
 	MVPprovider(void);
 	~MVPprovider(void);
@@ -29,5 +31,10 @@ private:
 
 	float speed;
 	float mouseSpeed;
+
+	int screenHeight;
+	int screenWidth;
+
+	double lastTime;
 };
 

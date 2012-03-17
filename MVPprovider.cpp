@@ -26,6 +26,8 @@ MVPprovider::MVPprovider(void)
 
 	float speed = 3.0f; // 3 units / second
 	float mouseSpeed = 0.005f;
+
+	lastTime = glfwGetTime();
 }
 
 MVPprovider::~MVPprovider(void)
@@ -34,9 +36,6 @@ MVPprovider::~MVPprovider(void)
 
 void MVPprovider::calculateMatrices()
 {
-	// glfwGetTime is called only once, the first time this function is called
-	static double lastTime = glfwGetTime();
-
 	// Compute time difference between current and last frame
 	double currentTime = glfwGetTime();
 	float deltaTime = float(currentTime - lastTime);
@@ -46,11 +45,11 @@ void MVPprovider::calculateMatrices()
 	glfwGetMousePos(&xpos, &ypos);
 
 	// Reset mouse position for next frame
-	glfwSetMousePos(1024/2, 768/2);
+	glfwSetMousePos(screenWidth/2, screenHeight/2);
 
 	// Compute new orientation
-	horizontalAngle += mouseSpeed * float(1024/2 - xpos );
-	verticalAngle   += mouseSpeed * float( 768/2 - ypos );
+	horizontalAngle += mouseSpeed * float( screenWidth/2 - xpos );
+	verticalAngle   += mouseSpeed * float( screenHeight/2 - ypos );
 
 	// Direction : Spherical coordinates to Cartesian coordinates conversion
 	glm::vec3 direction(

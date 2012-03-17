@@ -21,6 +21,8 @@ public:
 	void process();
 	void render();
 
+	glm::mat4 ModelMatrix;
+
 private:
 	GLuint programID;
 	GLuint MatrixID;
@@ -30,7 +32,6 @@ private:
 	GLuint LightID;
 	glm::vec3 lightPos;
 
-	glm::mat4 ModelMatrix;
 	MVPprovider* mvp;
 
 	GLuint Texture;

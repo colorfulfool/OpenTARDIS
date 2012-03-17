@@ -2,7 +2,10 @@
 #include "vortex.h"
 #include "MVPprovider.h"
 
+#include <Windows.h>
 #include <GL\glfw.h>
+
+const int FPS = 30;
 
 int initializeWindow()
 {
@@ -47,15 +50,18 @@ int main(int agrc, char** argv)
 	initializeWindow();
 
 	MVPprovider* mvp = MVPprovider::Instance();
+	mvp->setScreenSize(1024, 768);
 
 	Tardis* m_tardis;
 	m_tardis = new Tardis();
 
 	Vortex* m_vortex;
-	m_vortex = new Vortex();
+	//m_vortex = new Vortex();
 
 	m_tardis->initialize("tardis.obj", "tardis.dds", "tardis-ambiant.dds");
 	//m_vortex->initialize();
+
+	//double thisRedraw, lastRedraw = glfwGetTime();
 
 	do
 	{
@@ -70,6 +76,11 @@ int main(int agrc, char** argv)
 		m_tardis->render();
 
 		glfwSwapBuffers();
+
+		//thisRedraw = glfwGetTime() - lastRedraw;
+		//printf("%d", 1000/FPS - thisRedraw*1000);
+		//if (thisRedraw > 0) Sleep(1000/FPS - thisRedraw*1000);
+		
 	} while( glfwGetKey( GLFW_KEY_ESC ) != GLFW_PRESS && glfwGetWindowParam( GLFW_OPENED ) );
 
 	return 0;
