@@ -2,6 +2,8 @@
 #include "vortex.h"
 #include "MVPprovider.h"
 
+#include "helpers.h"
+
 #include <Windows.h>
 #include <GL\glfw.h>
 
@@ -36,11 +38,13 @@ int initializeWindow()
 
     glfwEnable( GLFW_STICKY_KEYS );
 
-	glClearColor(0.0f, 0.0f, 0.3f, 0.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 	glEnable(GL_CULL_FACE);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	return 0;
 }
@@ -52,35 +56,35 @@ int main(int agrc, char** argv)
 	MVPprovider* mvp = MVPprovider::Instance();
 	mvp->setScreenSize(1024, 768);
 
-	Tardis* m_tardis;
-	m_tardis = new Tardis();
+	//Tardis* m_tardis;
+	//m_tardis = new Tardis();
 
 	Vortex* m_vortex;
-	//m_vortex = new Vortex();
+	m_vortex = new Vortex();
 
-	m_tardis->initialize("tardis.obj", "tardis.dds", "tardis-ambiant.dds");
-	//m_vortex->initialize();
+	m_vortex->initialize(NULL, "clouds.dds");
+	//m_tardis->initialize();
 
 	//double thisRedraw, lastRedraw = glfwGetTime();
 
 	do
 	{
-		mvp->calculateMatrices();
+		//mvp->calculateMatrices();
+		computeMatricesFromInputs();
 
-		m_tardis->process();
-		//m_vortex->process();
+		m_vortex->process();
+		//m_tardis->process();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//m_vortex->render();
-		m_tardis->render();
+		m_vortex->render();
+		//m_tardis->render();
 
 		glfwSwapBuffers();
 
 		//thisRedraw = glfwGetTime() - lastRedraw;
 		//printf("%d", 1000/FPS - thisRedraw*1000);
-		//if (thisRedraw > 0) Sleep(1000/FPS - thisRedraw*1000);
-		
+		//if (thisRedraw > 0) Sleep(1000/FPS - thisRedraw*1000);	
 	} while( glfwGetKey( GLFW_KEY_ESC ) != GLFW_PRESS && glfwGetWindowParam( GLFW_OPENED ) );
 
 	return 0;

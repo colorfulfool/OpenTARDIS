@@ -11,14 +11,14 @@ Tardis::~Tardis(void)
 {
 }
 
-void Tardis::initialize(char* model="tardis.obj", char* diffuseMap="tardis.dds", char* ambiantMap="tardis-ambiant.dds")
+void Tardis::initialize(char* model, char* diffuseMap, char* ambiantMap)
 {
 	GLuint VertexArrayID;
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
 
 	// Create and compile our GLSL program from the shaders
-	programID = LoadShaders( "vertexshader.glsl", "fragmentshader.glsl" );
+	programID = LoadShaders( "tardisVertex.glsl", "tardisFragment.glsl" );
 
 	// Get a handle for our "MVP" uniform
 	MatrixID = glGetUniformLocation(programID, "MVP");
@@ -26,17 +26,17 @@ void Tardis::initialize(char* model="tardis.obj", char* diffuseMap="tardis.dds",
 	ModelMatrixID = glGetUniformLocation(programID, "M");
 
 	// Load the texture using any two methods
-	Texture = loadDDS("tardis.dds");
+	Texture = loadDDS(diffuseMap);
 	// Get a handle for our "myTextureSampler" uniform
 	TextureID  = glGetUniformLocation(programID, "myTextureSampler");
 
-	ambiantTexture = loadDDS("tardis-ambiant.dds");
+	ambiantTexture = loadDDS(ambiantMap);
 	ambiantID  = glGetUniformLocation(programID, "ambiantTextureSampler");
 
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec2> uvs;
 	std::vector<glm::vec3> normals;
-	bool res = loadOBJ("tardis.obj", vertices, uvs, normals);
+	bool res = loadOBJ(model, vertices, uvs, normals);
 
 	std::vector<unsigned int> indices;
 	std::vector<glm::vec3> indexed_vertices;
@@ -64,7 +64,11 @@ void Tardis::initialize(char* model="tardis.obj", char* diffuseMap="tardis.dds",
 	LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
 
 	lightPos = glm::vec3(-4,4,-4);
-	ModelMatrix = glm::mat4(1.0f);
+	ModelMatrix = glm::mat4(
+		1,0,0,0,
+		0,1,0,0,
+		0,0,1,0,
+		0,0,0,1);
 }
 
 void Tardis::process()
@@ -74,12 +78,13 @@ void Tardis::process()
 
 void Tardis::render()
 {
-	glm::mat4 ViewMatrix = mvp->View();
-	glm::mat4 ProjectionMatrix = mvp->Projection();
-	glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+	glEnable(GL_DEPTH_TEST);
 
-	// Clear the screen
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glm::mat4 ViewMatrix = mvp->View();
+	//glm::mat4 ProjectionMatrix = mvp->Projection();
+	glm::mat4 ViewMatrix = getViewMatrix();
+	glm::mat4 ProjectionMatrix = getProjectionMatrix();
+	glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
 	// Use our shader
 	glUseProgram(programID);
