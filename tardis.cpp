@@ -63,12 +63,13 @@ void Tardis::initialize(char* model, char* diffuseMap, char* ambiantMap)
 
 	LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
 
-	lightPos = glm::vec3(-4,4,-4);
+	lightPos = glm::vec3(-4,4,66);
 	ModelMatrix = glm::mat4(
 		1,0,0,0,
 		0,1,0,0,
 		0,0,1,0,
 		0,0,0,1);
+	ModelMatrix = glm::translate(ModelMatrix, glm::vec3(0.0f, 0.0f, 70.0f));
 }
 
 void Tardis::process()

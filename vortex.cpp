@@ -11,7 +11,7 @@ Vortex::Vortex(void)
 {
 	mvp = MVPprovider::Instance();
 
-	distance = 40;
+	distance = 80;
 	generatorState = 0;
 }
 
@@ -52,7 +52,7 @@ void Vortex::initialize(char* texturePath, char* alphaTexturePath)
 	glBindBuffer(GL_ARRAY_BUFFER, ParticleBufferID);
 	glBufferData(GL_ARRAY_BUFFER, particles.size() * sizeof(glm::vec3), &particles[0], GL_STREAM_DRAW);
 
-	glGenBuffers(1, &ParticleChanged); //изменившиеся позиции
+	glGenBuffers(1, &ParticleChanged); //РёР·РјРµРЅРёРІС€РёРµСЃСЏ РїРѕР·РёС†РёРё
 	glBindBuffer(GL_ARRAY_BUFFER, ParticleChanged);
 	glBufferData(GL_ARRAY_BUFFER, particles.size() * sizeof(glm::vec3), 0, GL_DYNAMIC_DRAW);
 	
@@ -60,7 +60,7 @@ void Vortex::initialize(char* texturePath, char* alphaTexturePath)
 	glBindBuffer(GL_ARRAY_BUFFER, SpeedBufferID);
 	glBufferData(GL_ARRAY_BUFFER, speeds.size() * sizeof(glm::vec3), &speeds[0], GL_STREAM_DRAW);
 
-	glGenBuffers(1, &SpeedChanged); //изменившиеся скорости
+	glGenBuffers(1, &SpeedChanged); //РёР·РјРµРЅРёРІС€РёРµСЃСЏ СЃРєРѕСЂРѕСЃС‚Рё
 	glBindBuffer(GL_ARRAY_BUFFER, SpeedChanged);
 	glBufferData(GL_ARRAY_BUFFER, speeds.size() * sizeof(glm::vec3), 0, GL_DYNAMIC_DRAW);
 
@@ -121,7 +121,7 @@ void Vortex::process()
 {
 	glDisable(GL_DEPTH_TEST);
 
-	generatorState++; //для начала обновляю состояние генератора частиц
+	generatorState++; //РґР»СЏ РЅР°С‡Р°Р»Р° РѕР±РЅРѕРІР»СЏСЋ СЃРѕСЃС‚РѕСЏРЅРёРµ РіРµРЅРµСЂР°С‚РѕСЂР° С‡Р°СЃС‚РёС†
 	if (generatorState > 100) generatorState = 1;
 
 	glUseProgram(ProcessingProgram);
@@ -132,17 +132,17 @@ void Vortex::process()
 	glUniform1f(DistanceID, distance);
 
 	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, ParticleBufferID); //буфер с центрами частиц
+	glBindBuffer(GL_ARRAY_BUFFER, ParticleBufferID); //Р±СѓС„РµСЂ СЃ С†РµРЅС‚СЂР°РјРё С‡Р°СЃС‚РёС†
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)NULL);
 
 	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, SpeedBufferID); //буфер с их скоростями
+	glBindBuffer(GL_ARRAY_BUFFER, SpeedBufferID); //Р±СѓС„РµСЂ СЃ РёС… СЃРєРѕСЂРѕСЃС‚СЏРјРё
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)NULL);
 
 	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, ParticleChanged);
 	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 1, SpeedChanged);
 
-	glBeginTransformFeedback(GL_POINTS); //теперь происходит собственно обработка
+	glBeginTransformFeedback(GL_POINTS); //С‚РµРїРµСЂСЊ РїСЂРѕРёСЃС…РѕРґРёС‚ СЃРѕР±СЃС‚РІРµРЅРЅРѕ РѕР±СЂР°Р±РѕС‚РєР°
 	glDrawArrays(GL_POINTS, 0, particles.size());
 	glEndTransformFeedback();
 
@@ -151,32 +151,34 @@ void Vortex::process()
 
 	glDisable(GL_RASTERIZER_DISCARD);
 
-	std::swap(ParticleBufferID, ParticleChanged); //меняю буферы местами
+	std::swap(ParticleBufferID, ParticleChanged); //РјРµРЅСЏСЋ Р±СѓС„РµСЂС‹ РјРµСЃС‚Р°РјРё
 	std::swap(SpeedBufferID, SpeedChanged);
 }
 
 void Vortex::render()
 {
-	glUseProgram(ProgramID); //выбираю программу с шейдерами
+	glEnable(GL_BLEND);
 
-	glm::mat4 ModelViewMatrix = getViewMatrix() * ModelMatrix; //подаю матрицы в шейдер
+	glUseProgram(ProgramID); //РІС‹Р±РёСЂР°СЋ РїСЂРѕРіСЂР°РјРјСѓ СЃ С€РµР№РґРµСЂР°РјРё
+
+	glm::mat4 ModelViewMatrix = getViewMatrix() * ModelMatrix; //РїРѕРґР°СЋ РјР°С‚СЂРёС†С‹ РІ С€РµР№РґРµСЂ
 	glUniformMatrix4fv(ModelViewID, 1, GL_FALSE, &ModelViewMatrix[0][0]);
 	glUniformMatrix4fv(ProjectionID, 1, GL_FALSE, &(getProjectionMatrix())[0][0]);
 	//glm::mat4 ModelViewMatrix = ModelMatrix * mvp->View();
 	//glUniformMatrix4fv(ModelViewID, 1, GL_FALSE, &ModelViewMatrix[0][0]);
 	//glUniformMatrix4fv(ProjectionID, 1, GL_FALSE, &(mvp->Projection())[0][0]);
-	glUniform2f(ParticleSizeID, 0.8f, 0.8f);
+	glUniform2f(ParticleSizeID, 1.0f, 1.0f);
 
 	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, ParticleBufferID); //буфер с центрами частиц
+	glBindBuffer(GL_ARRAY_BUFFER, ParticleBufferID); //Р±СѓС„РµСЂ СЃ С†РµРЅС‚СЂР°РјРё С‡Р°СЃС‚РёС†
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)NULL);
 
 	glEnableVertexAttribArray(3);
-	glBindBuffer(GL_ARRAY_BUFFER, SpritesBufferID); //буфер с центрами частиц
+	glBindBuffer(GL_ARRAY_BUFFER, SpritesBufferID); //Р±СѓС„РµСЂ СЃ С†РµРЅС‚СЂР°РјРё С‡Р°СЃС‚РёС†
 	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, (void*)NULL);
 
 	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, Texture); //текстура будет в нулевом модуле
+	//glBindTexture(GL_TEXTURE_2D, Texture); //С‚РµРєСЃС‚СѓСЂР° Р±СѓРґРµС‚ РІ РЅСѓР»РµРІРѕРј РјРѕРґСѓР»Рµ
 	//glUniform1i(TextureSamplerID, 0);
 
 	glActiveTexture(GL_TEXTURE1);
@@ -187,4 +189,6 @@ void Vortex::render()
 
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
+
+	glDisable(GL_BLEND);
 }

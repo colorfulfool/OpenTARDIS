@@ -17,7 +17,7 @@ public:
 	Tardis();
 	~Tardis();
 
-	void initialize(char* model, char* diffuseMap, char* ambiantMap);
+	void initialize(char* model="tardis.object", char* diffuseMap="tardis.dds", char* ambiantMap="tardis-ambiant.dds");
 	void process();
 	void render();
 
